@@ -5,6 +5,9 @@ import { useState } from "react";
 import Header from "@/app/my_project/components/header";
 import Sidebar from "@/app/my_project/components/sidebar";
 import Welcome from "@/app/my_project/components/welcome";
+import Stats from "@/app/my_project/components/stats";
+import Content from "@/app/my_project/components/content";
+import Footer from "@/app/my_project/components/footer";
 
 export default function DashboardPage() {
 
@@ -24,6 +27,17 @@ export default function DashboardPage() {
 
         {/* Welcome */}
         <Welcome />
+        
+        <Stats/>
+        
+        <Content/>
+
+        <Footer/>
+        
+
+        
+
+      
 
       </main>
 
