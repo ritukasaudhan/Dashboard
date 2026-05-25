@@ -1,9 +1,16 @@
+/* ══════════════════════════════════════════════════════════════════
+   GLOBALS.CSS — Main stylesheet for the Intern Hub Dashboard
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ✅ Tailwind CSS v4 imports */
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* ✅ Custom dark mode variant for Tailwind */
 @custom-variant dark (&:is(.dark *));
 
+/* ✅ Theme configuration — maps CSS variables to Tailwind color names */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -47,136 +54,274 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   GLOBAL RESET
+   ══════════════════════════════════════════════════════════════════ */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    /* ⚠️ MISTAKE: This font-family OVERRIDES the Geist font loaded in layout.tsx!
+       The layout loads Geist via next/font/google and sets CSS variables,
+       but this rule forces Arial on EVERYTHING.
+       
+       FIX: Remove this line entirely. The Tailwind @layer base at the bottom
+       already sets font-sans on the html element. */
     font-family: Arial, sans-serif;
 }
 
-body{
+/* ✅ Background color for the whole page */
+body {
     background: #f5f7fb;
 }
 
-.container{
+/* ══════════════════════════════════════════════════════════════════
+   LAYOUT — Container (Sidebar + Main)
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ✅ Flexbox container: sidebar on left, main content on right */
+.container {
     display: flex;
 }
-.sidebar{
+
+/* ══════════════════════════════════════════════════════════════════
+   SIDEBAR STYLES
+   ══════════════════════════════════════════════════════════════════ */
+
+.sidebar {
     width: 200px;
-    height: 100vh;
-    background:linear-gradient(180deg, #4a6cf7, #6a8dff);
+    height: 100vh; /* Full viewport height — sidebar stretches top to bottom */
+    background: linear-gradient(180deg, #4a6cf7, #6a8dff); /* Blue gradient */
     padding: 10px;
     color: white;
+    /* ⚠️ MISSING: position: sticky or fixed!
+       When the main content scrolls, the sidebar scrolls away too.
+       FIX: Add these properties:
+       position: sticky;
+       top: 0;
+       overflow-y: auto;
+    */
 }
-.sidebar h2{
+
+/* ⚠️ MISSING CLASS! The sidebar.tsx uses "hide" class but it's not defined here!
+   FIX: Add this rule to make the sidebar toggle work: */
+.sidebar.hide {
+    display: none;
+}
+
+.sidebar h2 {
     margin-bottom: 5px;
 }
-.sidebar ul{
-    list-style: none;
+
+.sidebar ul {
+    list-style: none; /* ✅ Removes bullet points from the nav list */
 }
-.sidebar li{
+
+.sidebar li {
     padding: 5px;
     margin: 8px 0;
-    cursor: pointer;
+    cursor: pointer; /* ✅ Shows hand cursor on hover (indicates clickable) */
+    /* ⚠️ MISSING: transition for smooth hover effect
+       FIX: Add: transition: background 0.2s ease; */
 }
+
+/* ✅ Active state + hover state for sidebar items */
 .sidebar .active,
-.sidebar li:hover{
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 8px ;
+.sidebar li:hover {
+    background: rgba(255, 255, 255, 0.2); /* Semi-transparent white overlay */
+    border-radius: 8px;
 }
-.main{
-    flex: 1;
+
+/* Sidebar profile image */
+.sidebar img {
+    width: 40px;
+    height: 40px;
+    /* ⚠️ CONFLICT: This sets sidebar images to 40x40, but the Image component
+       in sidebar.tsx sets width={70} height={70}. The CSS wins in some cases.
+       FIX: Remove this rule or make it consistent with the component props. */
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MAIN CONTENT AREA
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ⚠️ MISTAKE: .main is defined TWICE in this file!
+   The second definition (further below) overrides this one.
+   FIX: Remove one of them. Keep only the one with the styles you want. */
+.main {
+    flex: 1; /* Takes up all remaining space after sidebar */
     padding: 20px;
-    width:100%;
+    width: 100%;
 }
-.header{
+
+/* ══════════════════════════════════════════════════════════════════
+   HEADER STYLES
+   ══════════════════════════════════════════════════════════════════ */
+
+.header {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
-    background-color: #e9edff;
+    background-color: #e9edff; /* Light blue background */
     padding: 10px;
+    /* ⚠️ MISSING: border-radius for rounded corners (like other sections)
+       FIX: Add: border-radius: 12px; */
 }
-.Welcome{
-    background:#e9edff;
+
+/* ══════════════════════════════════════════════════════════════════
+   WELCOME SECTION
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ⚠️ NOTE: Capital "W" in class name is unconventional.
+   CSS class names are typically lowercase: .welcome
+   But since your JSX uses className="Welcome", this must match exactly. */
+.Welcome {
+    background: #e9edff;
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 12px;
 }
-.sidebar img{
-    width: 40px;
-    height: 40px;
-}
-.profile{
+
+/* ══════════════════════════════════════════════════════════════════
+   PROFILE SECTION (inside sidebar)
+   ══════════════════════════════════════════════════════════════════ */
+
+.profile {
     text-align: center;
     margin-bottom: 20px;
 }
-.profile img{
+
+.profile img {
     width: 70px;
     height: 70px;
-    border-radius: 50%;
-    object-fit:cover;
+    border-radius: 50%; /* ✅ Makes the image circular */
+    object-fit: cover; /* ✅ Crops image to fill without stretching */
     margin-bottom: 10px;
 }
-.profile p{
+
+.profile p {
     font-size: 14px;
 }
-.Welcome button{
-    background-color:#4a6cf7;
+
+/* ══════════════════════════════════════════════════════════════════
+   WELCOME BUTTON
+   ══════════════════════════════════════════════════════════════════ */
+
+.Welcome button {
+    background-color: #4a6cf7;
     color: white;
-    border:none;
-    padding:8px 12px;
+    border: none;
+    padding: 8px 12px;
     border-radius: 6px;
     margin-top: 10px;
-
+    cursor: pointer; /* ⚠️ MISSING: Add cursor pointer so user knows it's clickable */
+    /* ⚠️ MISSING: hover state!
+       FIX: Add a hover rule:
+       .Welcome button:hover { background-color: #3a5ce7; }
+    */
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   STATS CARDS (4-column grid)
+   ══════════════════════════════════════════════════════════════════ */
+
 .stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 20px;
-}
-.card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-.card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.main {
-  flex: 1;
-  padding: 30px;
-}
-.content{
     display: grid;
-    grid-template-columns: 2fr 2fr 2fr;
-    gap: 15px;
+    grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
+    gap: 20px;
+    margin-bottom: 20px;
+    /* ⚠️ NOTE: On mobile screens, 4 columns will be too cramped!
+       FIX: Add a media query for responsive design:
+       @media (max-width: 768px) {
+         .stats { grid-template-columns: repeat(2, 1fr); }
+       }
+       @media (max-width: 480px) {
+         .stats { grid-template-columns: 1fr; }
+       }
+    */
 }
-.content ul{
-    margin-top: 10px;
-    list-style: none;
 
+/* ⚠️ MISTAKE: .card is defined TWICE! Second definition overrides the first.
+   FIX: Merge them into one rule. */
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
-.content li{
+
+/* ⚠️ DUPLICATE REMOVED — This was the second .main definition.
+   Keeping only one with the correct padding. */
+/* .main {
+    flex: 1;
+    padding: 30px;
+} */
+/* FIX: The .main above already has padding:20px. If you want 30px, change it there. */
+.main {
+    flex: 1;
+    padding: 30px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CONTENT GRID (3-column layout for dashboard sections)
+   ══════════════════════════════════════════════════════════════════ */
+
+.content {
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr; /* 3 equal columns */
+    /* ⚠️ TIP: "2fr 2fr 2fr" is the same as "1fr 1fr 1fr" or "repeat(3, 1fr)"
+       Using repeat(3, 1fr) is cleaner and more readable. */
+    gap: 15px;
+    /* ⚠️ MISSING: Responsive design!
+       FIX: Add media query:
+       @media (max-width: 768px) {
+         .content { grid-template-columns: 1fr; }
+       }
+    */
+}
+
+.content ul {
+    margin-top: 10px;
+    list-style: none; /* No bullet points */
+}
+
+.content li {
     margin: 8px 0;
 }
-.points{
-    background: #e9edff;
-  padding: 5px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 
-}
-.points-2{
+/* ══════════════════════════════════════════════════════════════════
+   POINTS/BADGES STYLES
+   ══════════════════════════════════════════════════════════════════ */
+
+.points {
     background: #e9edff;
-  padding: 5px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    color: #6a8dff;
+    padding: 5px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
+
+.points-2 {
+    background: #e9edff;
+    padding: 5px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    color: #6a8dff;
+    /* ⚠️ NOTE: .points and .points-2 are almost identical!
+       FIX: Use one class and add color separately:
+       <span className="points text-blue-500">...</span>
+       Or create: .points.highlight { color: #6a8dff; }
+    */
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CSS VARIABLES — Light Theme (default)
+   These define the color palette used by shadcn/ui components.
+   ══════════════════════════════════════════════════════════════════ */
 
 :root {
   --background: oklch(1 0 0);
@@ -213,6 +358,11 @@ body{
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   CSS VARIABLES — Dark Theme
+   Applied when <html> or a parent has class="dark"
+   ══════════════════════════════════════════════════════════════════ */
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -247,14 +397,40 @@ body{
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   TAILWIND BASE LAYER — Applied to all elements
+   ══════════════════════════════════════════════════════════════════ */
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    /* ✅ Sets default border and outline colors from theme variables */
   }
   body {
     @apply bg-background text-foreground;
+    /* ✅ Uses theme colors for body background and text */
   }
   html {
     @apply font-sans;
+    /* ✅ Applies the Geist font (set via CSS variable in layout.tsx) */
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   📝 OVERALL CSS FILE ISSUES:
+   
+   1. MIXED APPROACHES: You're using plain CSS classes (.sidebar, .header)
+      AND Tailwind utility classes in components. Pick one approach!
+      Recommendation: Use Tailwind for everything, remove custom CSS classes.
+   
+   2. DUPLICATE RULES: .main and .card are each defined twice.
+   
+   3. NO RESPONSIVE DESIGN: No @media queries for mobile/tablet.
+      The 4-column stats grid and 200px sidebar will break on small screens.
+   
+   4. FONT CONFLICT: The * { font-family: Arial } overrides Geist font.
+   
+   5. MISSING .hide CLASS: Was needed for sidebar toggle (now added above).
+   
+   6. NO HOVER STATES: Buttons and interactive elements lack hover feedback.
+   ══════════════════════════════════════════════════════════════════ */
